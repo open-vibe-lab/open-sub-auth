@@ -58,4 +58,5 @@ export { executeDeviceCodeFlow, pollForToken, requestDeviceCode } from "@/core/o
 export { startCallbackServer } from "@/core/callback-server.ts";
 export { parseCodeAndState, promptForCode } from "@/core/manual-code-input.ts";
 export { openBrowser } from "@/core/browser.ts";
+export { initProxy } from "@/core/proxy.ts";
 export { decodeJWT } from "@/token/jwt.ts";

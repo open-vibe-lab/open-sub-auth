@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { printError } from "@/cli/ui.ts";
+import { initProxy } from "@/core/proxy.ts";
 
 const HELP = `
 open-sub-auth - OAuth authentication for AI subscription APIs
@@ -16,6 +17,7 @@ Commands:
 
 Options:
   --manual             Use manual code paste mode (for headless/CI)
+  --proxy <url>        HTTP/HTTPS proxy URL (overrides HTTPS_PROXY env var)
   --help, -h           Show this help message
   --version, -v        Show version
 
@@ -23,15 +25,23 @@ Examples:
   open-sub-auth login claude
   open-sub-auth login openai-codex
   open-sub-auth login claude --manual
+  open-sub-auth login claude --proxy http://proxy.corp:8080
   open-sub-auth token claude | pbcopy
   open-sub-auth status
 `.trim();
 
 async function main(): Promise<void> {
-  const { positionals } = parseArgs({
+  const { positionals, values } = parseArgs({
     allowPositionals: true,
     strict: false,
+    options: {
+      proxy: { type: "string" },
+    },
   });
+
+  // Initialize proxy support before any network requests.
+  // Reads HTTPS_PROXY / HTTP_PROXY / NO_PROXY env vars; --proxy overrides them.
+  initProxy(values.proxy as string | undefined);
 
   if (process.argv.includes("--help") || process.argv.includes("-h")) {
     console.log(HELP);

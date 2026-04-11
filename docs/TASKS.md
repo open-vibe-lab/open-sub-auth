@@ -114,15 +114,17 @@
   - 28 个单元测试通过（oauth-device: 13 + github-copilot: 15）
 - **风险**: 无公开 API 端点，完全依赖逆向工程，稳定性未知
 
-#### Task R2: 代理 (Proxy) 支持
+#### Task R2: 代理 (Proxy) 支持 ✅
 
 - **优先级**: 高
 - **描述**: 国内用户需要代理配置
 - **工作内容**:
   - 支持 `HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY` 环境变量
-  - 在所有 `fetch()` 调用中注入代理配置
-  - 可能需要引入 `undici` 或 `node-fetch` 的 ProxyAgent
-  - CLI 增加 `--proxy` 选项
+  - `src/core/proxy.ts` — `initProxy(proxyUrl?)` 使用 `node:undici` 的 `setGlobalDispatcher + EnvHttpProxyAgent`，自动代理所有 `fetch()` 调用
+  - CLI 增加 `--proxy <url>` 选项
+  - `engines.node` 升级至 `>=18.17.0`（`node:undici` 可用的最低版本）
+  - `initProxy` 导出至公开 API
+  - 6 个单元测试通过
 
 #### Task R3: 跨平台存储完善
 
