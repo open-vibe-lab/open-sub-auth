@@ -178,15 +178,14 @@
 
 ### v1.0.0 — 生产就绪
 
-#### Task R8: CI/CD 流水线
+#### Task R8: CI/CD 流水线 ✅
 
 - **优先级**: 高
 - **描述**: GitHub Actions 自动化
 - **工作内容**:
-  - PR 自动测试（lint + typecheck + test）
-  - 自动发布到 npm（基于 git tag）
-  - 多平台测试（macOS, Linux, Windows）
-  - Dependabot 依赖更新
+  - `.github/workflows/ci.yml` — PR 自动测试：lint + typecheck（ubuntu only）+ 测试矩阵（ubuntu/macos/windows × Node 18/20/22）+ 构建验证
+  - `.github/workflows/release.yml` — 自动发布到 npm（`v*` tag 触发，`--access public` 支持 scoped package）
+  - `.github/dependabot.yml` — npm 和 github-actions 双生态系统，每周自动更新
 
 #### Task R9: 更多 Provider 扩展
 
