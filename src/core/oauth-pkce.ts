@@ -59,8 +59,9 @@ export async function exchangeCode(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new OAuthCallbackError(`Token exchange failed (${response.status}): ${errorText}`);
+    // Do not include the raw response body — it may contain sensitive OAuth debug info.
+    // Consumers that need details should inspect the HTTP response directly.
+    throw new OAuthCallbackError(`Token exchange failed (HTTP ${response.status})`);
   }
 
   const data = (await response.json()) as Record<string, unknown>;
@@ -87,8 +88,7 @@ export async function refreshAccessToken(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new OAuthCallbackError(`Token refresh failed (${response.status}): ${errorText}`);
+    throw new OAuthCallbackError(`Token refresh failed (HTTP ${response.status})`);
   }
 
   const data = (await response.json()) as Record<string, unknown>;

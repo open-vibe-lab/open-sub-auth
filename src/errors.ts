@@ -29,9 +29,10 @@ export class TokenRefreshError extends OpenSubAuthError {
     public readonly provider: string,
     public readonly cause_: unknown,
   ) {
-    super(
-      `Failed to refresh token for "${provider}": ${cause_ instanceof Error ? cause_.message : String(cause_)}`,
-    );
+    // Use only the error class name, not .message — cause may contain token values
+    // from upstream HTTP responses that should not be propagated to callers.
+    const causeType = cause_ instanceof Error ? cause_.constructor.name : typeof cause_;
+    super(`Failed to refresh token for "${provider}" (${causeType}). Check logs for details.`);
     this.name = "TokenRefreshError";
   }
 }

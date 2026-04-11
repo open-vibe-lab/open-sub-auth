@@ -39,8 +39,7 @@ export async function requestDeviceCode(config: ProviderConfig): Promise<{
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new OAuthCallbackError(`Device code request failed (${response.status}): ${errorText}`);
+    throw new OAuthCallbackError(`Device code request failed (HTTP ${response.status})`);
   }
 
   const data = (await response.json()) as Record<string, unknown>;

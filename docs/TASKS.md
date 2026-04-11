@@ -208,15 +208,15 @@
   - 更多使用示例（与 Vercel AI SDK 集成、与 LangChain 集成等）
   - Logo 设计
 
-#### Task R11: 安全审计
+#### Task R11: 安全审计 ✅
 
 - **优先级**: 高
 - **描述**: 安全性强化
 - **工作内容**:
-  - Token 从不出现在日志/错误消息中（审计所有 Error 构造）
-  - 文件存储加密方案安全评审
-  - PKCE 实现安全评审
-  - 依赖安全扫描
+  - ✅ Token 从不出现在日志/错误消息中 — 审计并修复 4 处 HIGH（oauth-pkce.ts × 2、oauth-device.ts、github-copilot.ts）和 1 处 MEDIUM（errors.ts TokenRefreshError）：HTTP 响应体从错误消息中移除，仅保留状态码
+  - ✅ 文件存储加密方案安全评审 — 通过：AES-256-GCM、随机 IV/Salt、GCM 认证标签验证、文件权限 0600。中等风险：key 派生基于 hostname+username（无用户密码），为文档化已知局限
+  - ✅ PKCE 实现安全评审 — 通过：code_verifier 256 bits 熵、S256 计算正确、state 256 bits，符合 RFC 7636
+  - ✅ 依赖安全扫描 — 通过：仅 cross-keychain 一个运行时依赖，无已知漏洞
 
 ---
 

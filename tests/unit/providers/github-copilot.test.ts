@@ -191,7 +191,7 @@ describe("GitHubCopilotProvider", () => {
       );
 
       await expect(provider.refresh("invalid-token")).rejects.toThrow(
-        "Copilot session token request failed (401)",
+        "Copilot session token request failed (HTTP 401)",
       );
     });
   });

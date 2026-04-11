@@ -86,7 +86,7 @@ describe("requestDeviceCode", () => {
     );
 
     await expect(requestDeviceCode(TEST_CONFIG)).rejects.toThrow(
-      "Device code request failed (400)",
+      "Device code request failed (HTTP 400)",
     );
   });
 

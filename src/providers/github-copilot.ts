@@ -30,10 +30,7 @@ async function fetchCopilotSessionToken(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new OAuthCallbackError(
-      `Copilot session token request failed (${response.status}): ${errorText}`,
-    );
+    throw new OAuthCallbackError(`Copilot session token request failed (HTTP ${response.status})`);
   }
 
   const data = (await response.json()) as Record<string, unknown>;
