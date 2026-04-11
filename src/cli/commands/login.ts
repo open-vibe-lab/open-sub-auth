@@ -1,9 +1,10 @@
 import { listProviders } from "@/providers/registry.ts";
 import { createTokenStore } from "@/storage/store.ts";
+import type { StoreType } from "@/storage/store.ts";
 import { TokenManager } from "@/token/manager.ts";
 import { promptSelect, printError, printSuccess } from "@/cli/ui.ts";
 
-export async function loginCommand(providerArg?: string): Promise<void> {
+export async function loginCommand(providerArg?: string, storeType?: StoreType): Promise<void> {
   await Promise.all([import("@/providers/claude.ts"), import("@/providers/openai-codex.ts")]);
 
   const providers = listProviders();
@@ -23,7 +24,7 @@ export async function loginCommand(providerArg?: string): Promise<void> {
   }
 
   const manual = process.argv.includes("--manual");
-  const store = await createTokenStore();
+  const store = await createTokenStore(storeType);
   const manager = new TokenManager(store);
 
   try {

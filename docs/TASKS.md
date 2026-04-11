@@ -126,26 +126,32 @@
   - `initProxy` 导出至公开 API
   - 6 个单元测试通过
 
-#### Task R3: 跨平台存储完善
+#### Task R3: 跨平台存储完善 ✅ (部分完成)
 
 - **优先级**: 中
 - **描述**: 完善存储层的跨平台兼容性
 - **工作内容**:
-  - 测试 Linux 环境下 cross-keychain 的 libsecret 支持
-  - 测试 Windows 环境下 Credential Manager 支持
-  - 文件存储加密 key 派生策略改进（当前基于 hostname+username，考虑更安全方案）
-  - 添加 `--store file` / `--store keychain` CLI 选项强制使用指定存储
+  - ✅ 添加 `--store auto|keychain|file` CLI 选项强制使用指定存储
+    - `createTokenStore(storeType)` API 更新，接受 `'auto' | 'keychain' | 'file'`
+    - `--store keychain` 不可用时抛出 `AuthenticationError`（而非静默降级）
+    - `--store file` 直接使用加密文件存储
+    - 5 个单元测试通过（`store.test.ts`）
+  - ⏳ 测试 Linux 环境下 cross-keychain 的 libsecret 支持（需 Linux 环境）
+  - ⏳ 测试 Windows 环境下 Credential Manager 支持（需 Windows 环境）
+  - ⏳ 文件存储加密 key 派生策略改进（当前基于 hostname+username，已知局限已文档化）
 
-#### Task R4: Token 导入/导出
+#### Task R4: Token 导入/导出 ✅ (部分完成)
 
 - **优先级**: 中
 - **描述**: 支持从其他工具导入和导出 token
 - **工作内容**:
-  - 从 Claude Code 凭证导入（~/.claude/.credentials.json）
-  - 从 GitHub Copilot CLI 导入（~/.copilot/config.json）
-  - `open-sub-auth export` CLI 命令（输出 JSON 到 stdout）
-  - `open-sub-auth import` CLI 命令（从 JSON stdin 导入）
-  - 环境变量支持：`CLAUDE_CODE_OAUTH_TOKEN`、`COPILOT_GITHUB_TOKEN`
+  - ✅ `open-sub-auth export` CLI 命令 — 输出 `StoredCredential[]` JSON 到 stdout
+  - ✅ `open-sub-auth import` CLI 命令 — 从 stdin 读取 JSON 数组，验证字段后写入 store
+  - ✅ 环境变量支持：`CLAUDE_CODE_OAUTH_TOKEN`（`importClaudeTokenFromEnv()`）、`COPILOT_GITHUB_TOKEN`（`importCopilotTokenFromEnv()`，expiresAt=0 强制立即换取 Copilot session token）
+  - ✅ 16 个单元测试通过（11 个测试文件，122 个测试）
+  - ⏳ 文件导入暂缓（格式未验证，实机无对应凭证文件）：
+    - `importFromClaudeCode()` — 读取 `~/.claude/.credentials.json`（格式未知）
+    - `importFromCopilotCli()` — 读取 `~/.copilot/config.json`（格式未知）
 
 ### v0.3.0 — 可选高级 Client API
 

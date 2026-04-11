@@ -1,6 +1,7 @@
 import { parseArgs } from "node:util";
 import { printError } from "@/cli/ui.ts";
 import { initProxy } from "@/core/proxy.ts";
+import type { StoreType } from "@/storage/store.ts";
 
 const HELP = `
 open-sub-auth - OAuth authentication for AI subscription APIs
@@ -20,6 +21,7 @@ Commands:
 Options:
   --manual             Use manual code paste mode (for headless/CI)
   --proxy <url>        HTTP/HTTPS proxy URL (overrides HTTPS_PROXY env var)
+  --store <type>       Storage backend: auto (default), keychain, or file
   --help, -h           Show this help message
   --version, -v        Show version
 
@@ -40,12 +42,20 @@ async function main(): Promise<void> {
     strict: false,
     options: {
       proxy: { type: "string" },
+      store: { type: "string" },
     },
   });
 
   // Initialize proxy support before any network requests.
   // Reads HTTPS_PROXY / HTTP_PROXY / NO_PROXY env vars; --proxy overrides them.
   initProxy(values.proxy as string | undefined);
+
+  const rawStore = values.store as string | undefined;
+  if (rawStore && rawStore !== "auto" && rawStore !== "keychain" && rawStore !== "file") {
+    printError(`Invalid --store value "${rawStore}". Valid values: auto, keychain, file`);
+    process.exit(1);
+  }
+  const storeType = (rawStore as StoreType | undefined) ?? "auto";
 
   if (process.argv.includes("--help") || process.argv.includes("-h")) {
     console.log(HELP);
@@ -63,32 +73,32 @@ async function main(): Promise<void> {
   switch (command) {
     case "login": {
       const { loginCommand } = await import("@/cli/commands/login.ts");
-      await loginCommand(providerArg);
+      await loginCommand(providerArg, storeType);
       break;
     }
     case "logout": {
       const { logoutCommand } = await import("@/cli/commands/logout.ts");
-      await logoutCommand(providerArg);
+      await logoutCommand(providerArg, storeType);
       break;
     }
     case "status": {
       const { statusCommand } = await import("@/cli/commands/status.ts");
-      await statusCommand();
+      await statusCommand(storeType);
       break;
     }
     case "token": {
       const { tokenCommand } = await import("@/cli/commands/token.ts");
-      await tokenCommand(providerArg);
+      await tokenCommand(providerArg, storeType);
       break;
     }
     case "export": {
       const { exportCommand } = await import("@/cli/commands/export.ts");
-      await exportCommand();
+      await exportCommand(storeType);
       break;
     }
     case "import": {
       const { importCommand } = await import("@/cli/commands/import.ts");
-      await importCommand();
+      await importCommand(storeType);
       break;
     }
     case "providers": {

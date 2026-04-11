@@ -1,8 +1,9 @@
 import { createTokenStore } from "@/storage/store.ts";
+import type { StoreType } from "@/storage/store.ts";
 import { printError, printSuccess } from "@/cli/ui.ts";
 import type { StoredCredential } from "@/types.ts";
 
-export async function importCommand(): Promise<void> {
+export async function importCommand(storeType?: StoreType): Promise<void> {
   if (process.stdin.isTTY) {
     process.stderr.write(
       "Reading credentials from stdin (pipe JSON or press Ctrl+D when done)...\n",
@@ -52,7 +53,7 @@ export async function importCommand(): Promise<void> {
     process.exit(1);
   }
 
-  const store = await createTokenStore();
+  const store = await createTokenStore(storeType);
   let count = 0;
   for (const cred of credentials) {
     await store.set(cred.metadata.provider, cred.metadata.accountId, cred);

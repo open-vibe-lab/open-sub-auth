@@ -32,6 +32,7 @@ export { TokenManager } from "@/token/manager.ts";
 
 // Storage
 export { createTokenStore, FileStore, KeychainStore } from "@/storage/store.ts";
+export type { StoreType } from "@/storage/store.ts";
 
 // Provider registry
 export { getProvider, listProviders, registerProvider } from "@/providers/registry.ts";
