@@ -28,7 +28,7 @@ A lightweight, open-source TypeScript library that handles OAuth login for AI su
 ## Installation
 
 ```bash
-npm install open-sub-auth
+npm install @open-vibe-lab/open-sub-auth
 ```
 
 ## Quick Start
@@ -55,7 +55,7 @@ npx open-sub-auth login claude --manual
 ### Library
 
 ```typescript
-import { TokenManager, createTokenStore } from "open-sub-auth";
+import { TokenManager, createTokenStore } from "@open-vibe-lab/open-sub-auth";
 
 // Initialize
 const store = await createTokenStore();
@@ -101,7 +101,7 @@ const response = await fetch("https://chatgpt.com/backend-api/codex/responses", 
 If you've already authenticated with OpenAI's Codex CLI, you can import those tokens:
 
 ```typescript
-import { importFromCodexCli } from "open-sub-auth";
+import { importFromCodexCli } from "@open-vibe-lab/open-sub-auth";
 
 const tokens = importFromCodexCli(); // Reads ~/.codex/auth.json
 if (tokens) {

@@ -1,5 +1,5 @@
 {
-  "name": "open-sub-auth",
+  "name": "@open-vibe-lab/open-sub-auth",
   "version": "0.1.0",
   "description": "Open Source Subscription OAuth Authentication Library for AI Providers. Login once with your subscription. Call native APIs directly.",
   "keywords": [

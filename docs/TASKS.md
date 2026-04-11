@@ -1,4 +1,4 @@
-# open-sub-auth 任务记录
+# @open-vibe-lab/open-sub-auth 任务记录
 
 ## MVP 已完成任务 (v0.1.0)
 
@@ -150,7 +150,7 @@
 #### Task R5: Claude Client 封装
 
 - **优先级**: 低
-- **描述**: 提供 `@open-sub-auth/claude-client` 可选包
+- **描述**: 提供 `@open-vibe-lab/claude-client` 可选包
 - **工作内容**:
   - 封装 `client.messages.create()` 等高级 API
   - 自动注入认证 headers
@@ -160,7 +160,7 @@
 #### Task R6: OpenAI Codex Client 封装
 
 - **优先级**: 低
-- **描述**: 提供 `@open-sub-auth/openai-client` 可选包
+- **描述**: 提供 `@open-vibe-lab/openai-client` 可选包
 - **工作内容**:
   - 封装 chatgpt.com/backend-api/codex/responses 的请求/响应格式
   - SSE 流式响应解析
