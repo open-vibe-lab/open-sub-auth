@@ -37,9 +37,9 @@ export { createTokenStore, FileStore, KeychainStore } from "@/storage/store.ts";
 export { getProvider, listProviders, registerProvider } from "@/providers/registry.ts";
 
 // Built-in providers
-export { ClaudeProvider } from "@/providers/claude.ts";
+export { ClaudeProvider, importClaudeTokenFromEnv } from "@/providers/claude.ts";
 export { OpenAICodexProvider, importFromCodexCli } from "@/providers/openai-codex.ts";
-export { GitHubCopilotProvider } from "@/providers/github-copilot.ts";
+export { GitHubCopilotProvider, importCopilotTokenFromEnv } from "@/providers/github-copilot.ts";
 
 // Core utilities (for advanced users / custom providers)
 export {

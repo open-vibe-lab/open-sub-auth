@@ -14,6 +14,8 @@ Commands:
   status               Show status of all stored credentials
   token [provider]     Output a valid access token to stdout
   providers            List available providers
+  export               Export all stored credentials to JSON (stdout)
+  import               Import credentials from JSON (stdin)
 
 Options:
   --manual             Use manual code paste mode (for headless/CI)
@@ -28,6 +30,8 @@ Examples:
   open-sub-auth login claude --proxy http://proxy.corp:8080
   open-sub-auth token claude | pbcopy
   open-sub-auth status
+  open-sub-auth export > credentials-backup.json
+  open-sub-auth import < credentials-backup.json
 `.trim();
 
 async function main(): Promise<void> {
@@ -75,6 +79,16 @@ async function main(): Promise<void> {
     case "token": {
       const { tokenCommand } = await import("@/cli/commands/token.ts");
       await tokenCommand(providerArg);
+      break;
+    }
+    case "export": {
+      const { exportCommand } = await import("@/cli/commands/export.ts");
+      await exportCommand();
+      break;
+    }
+    case "import": {
+      const { importCommand } = await import("@/cli/commands/import.ts");
+      await importCommand();
       break;
     }
     case "providers": {
