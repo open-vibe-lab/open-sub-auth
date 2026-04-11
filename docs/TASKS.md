@@ -203,16 +203,16 @@
   - 其他支持订阅 OAuth 的 AI 服务
 - **工作内容**: 每个 provider 需实现 Provider 接口 + 对应测试
 
-#### Task R10: 完善文档和社区
+#### Task R10: 完善文档和社区 ✅ (部分完成)
 
 - **优先级**: 中
 - **描述**: 提升项目成熟度
 - **工作内容**:
-  - API 文档（TypeDoc 或 手写）
-  - 贡献指南 CONTRIBUTING.md
-  - CHANGELOG.md
-  - 更多使用示例（与 Vercel AI SDK 集成、与 LangChain 集成等）
-  - Logo 设计
+  - ✅ `CONTRIBUTING.md` — 开发环境配置、目录结构、新增 Provider 指南、安全准则、测试规范、PR 流程、版本说明
+  - ✅ `CHANGELOG.md` — Keep a Changelog 格式，记录 v0.1.0 发布内容和 Unreleased 变更
+  - ⏳ API 文档（TypeDoc 或 手写）
+  - ⏳ 更多使用示例（与 Vercel AI SDK 集成、与 LangChain 集成等）
+  - ⏳ Logo 设计
 
 #### Task R11: 安全审计 ✅
 
