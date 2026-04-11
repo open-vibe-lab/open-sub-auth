@@ -3,11 +3,13 @@
 ## MVP 已完成任务 (v0.1.0)
 
 ### Step 1: 项目初始化 ✅
+
 - git init、package.json、tsconfig.json、tsup.config.ts、biome.json、vitest.config.ts
 - MIT LICENSE、.gitignore
 - 安装依赖：cross-keychain（运行时）、typescript、tsup、vitest、@biomejs/biome（开发）
 
 ### Step 2: 基础类型和工具 ✅
+
 - `src/types.ts` — 所有共享接口和类型（TokenSet、Provider、ProviderConfig、TokenStore、LoginOptions 等）
 - `src/errors.ts` — 8 个自定义错误类（AuthenticationError、TokenExpiredError、ProviderNotFoundError 等）
 - `src/core/crypto.ts` — PKCE code_verifier/code_challenge 生成 + state 随机生成（使用 node:crypto）
@@ -15,12 +17,14 @@
 - 7 个单元测试通过
 
 ### Step 3: OAuth PKCE 流程引擎 ✅
+
 - `src/core/callback-server.ts` — 本地 HTTP 回调服务器（自动模式），提取 code + state，返回成功 HTML，超时处理
 - `src/core/manual-code-input.ts` — 手动 code#state 粘贴解析（headless/CI 模式），支持纯 code 和 code#state 两种格式
 - `src/core/oauth-pkce.ts` — 完整 PKCE 流程编排：buildAuthorizationUrl、exchangeCode、refreshAccessToken、executePKCEFlow
 - 13 个单元测试通过（回调服务器、code#state 解析、URL 构建等）
 
 ### Step 4: Claude Provider ✅
+
 - `src/providers/registry.ts` — Provider 注册表（Map + factory 模式）
 - `src/providers/claude.ts` — Claude Pro/Max 完整实现
   - 授权端点: `https://claude.ai/oauth/authorize`
@@ -32,12 +36,14 @@
 - 12 个单元测试通过
 
 ### Step 5: 存储层 ✅
-- `src/storage/keychain-store.ts` — OS Keychain 存储（cross-keychain），service="open-sub-auth"，key="{provider}::{accountId}"，维护 __index__ 条目支持枚举
+
+- `src/storage/keychain-store.ts` — OS Keychain 存储（cross-keychain），service="open-sub-auth"，key="{provider}::{accountId}"，维护 **index** 条目支持枚举
 - `src/storage/file-store.ts` — 加密文件存储（AES-256-GCM + PBKDF2），路径 ~/.open-sub-auth/credentials.json，权限 0600
 - `src/storage/store.ts` — 工厂函数 createTokenStore()，优先 keychain 回退 file store
 - 9 个单元测试通过（CRUD、加密验证、多 provider 隔离等）
 
 ### Step 6: Token Manager ✅
+
 - `src/token/jwt.ts` — JWT payload 解码（不验证签名，用于 OpenAI id_token）
 - `src/token/manager.ts` — 核心 TokenManager 类
   - login(): 交互式登录 + 存储
@@ -49,6 +55,7 @@
 - 11 个单元测试通过
 
 ### Step 7: OpenAI Codex Provider ✅
+
 - `src/providers/openai-codex.ts` — OpenAI ChatGPT Plus/Pro 完整实现
   - 授权端点: `https://auth.openai.com/oauth/authorize`
   - Token 端点: `https://auth.openai.com/oauth/token`
@@ -60,6 +67,7 @@
 - 14 个单元测试通过
 
 ### Step 8: CLI ✅
+
 - `src/cli/index.ts` — CLI 入口，使用 node:util.parseArgs（零依赖）
 - `src/cli/ui.ts` — 终端交互（promptSelect、printError、printSuccess）
 - 5 个命令：
@@ -70,12 +78,14 @@
   - `providers` — 列出可用 provider
 
 ### Step 9: 主入口 + 示例 ✅
+
 - `src/index.ts` — 统一导出所有公开 API（类型、错误、TokenManager、Storage、Providers、Core 工具）
 - `examples/basic-claude.ts` — Claude 登录 + API 调用示例
 - `examples/basic-openai.ts` — OpenAI Codex 登录 + API 调用示例 + importFromCodexCli 示例
 - `examples/multi-account.ts` — 多账号管理示例
 
 ### Step 10: README + 最终验证 ✅
+
 - `README.md` — 完整文档（安装、CLI 使用、Library API、架构、ToS 风险声明）
 - 最终验证全部通过：
   - TypeScript 类型检查: PASS
@@ -89,6 +99,7 @@
 ### v0.2.0 — 扩展 Provider + 增强功能
 
 #### Task R1: GitHub Copilot Provider (Device Code Flow)
+
 - **优先级**: 高
 - **描述**: 实现 GitHub Copilot 认证支持
 - **工作内容**:
@@ -104,6 +115,7 @@
 - **风险**: 无公开 API 端点，完全依赖逆向工程，稳定性未知
 
 #### Task R2: 代理 (Proxy) 支持
+
 - **优先级**: 高
 - **描述**: 国内用户需要代理配置
 - **工作内容**:
@@ -113,6 +125,7 @@
   - CLI 增加 `--proxy` 选项
 
 #### Task R3: 跨平台存储完善
+
 - **优先级**: 中
 - **描述**: 完善存储层的跨平台兼容性
 - **工作内容**:
@@ -122,6 +135,7 @@
   - 添加 `--store file` / `--store keychain` CLI 选项强制使用指定存储
 
 #### Task R4: Token 导入/导出
+
 - **优先级**: 中
 - **描述**: 支持从其他工具导入和导出 token
 - **工作内容**:
@@ -134,6 +148,7 @@
 ### v0.3.0 — 可选高级 Client API
 
 #### Task R5: Claude Client 封装
+
 - **优先级**: 低
 - **描述**: 提供 `@open-sub-auth/claude-client` 可选包
 - **工作内容**:
@@ -143,6 +158,7 @@
   - 基于 getAuthHeaders() 构建，不替代底层 API
 
 #### Task R6: OpenAI Codex Client 封装
+
 - **优先级**: 低
 - **描述**: 提供 `@open-sub-auth/openai-client` 可选包
 - **工作内容**:
@@ -151,6 +167,7 @@
   - 模型列表查询
 
 #### Task R7: 统一 OpenAI-Compatible Facade（可选）
+
 - **优先级**: 低
 - **描述**: PRD 中提到的可选扩展
 - **工作内容**:
@@ -160,6 +177,7 @@
 ### v1.0.0 — 生产就绪
 
 #### Task R8: CI/CD 流水线
+
 - **优先级**: 高
 - **描述**: GitHub Actions 自动化
 - **工作内容**:
@@ -169,6 +187,7 @@
   - Dependabot 依赖更新
 
 #### Task R9: 更多 Provider 扩展
+
 - **优先级**: 中
 - **描述**: 支持更多 AI 提供商
 - **候选**:
@@ -178,6 +197,7 @@
 - **工作内容**: 每个 provider 需实现 Provider 接口 + 对应测试
 
 #### Task R10: 完善文档和社区
+
 - **优先级**: 中
 - **描述**: 提升项目成熟度
 - **工作内容**:
@@ -188,6 +208,7 @@
   - Logo 设计
 
 #### Task R11: 安全审计
+
 - **优先级**: 高
 - **描述**: 安全性强化
 - **工作内容**:
@@ -202,25 +223,25 @@
 
 ### 各 Provider OAuth 端点速查
 
-| Provider | 授权端点 | Token 端点 | Client ID |
-|----------|---------|-----------|-----------|
-| Claude | `claude.ai/oauth/authorize` | `console.anthropic.com/v1/oauth/token` | `9d1c250a-e61b-44d9-88ed-5944d1962f5e` |
-| OpenAI Codex | `auth.openai.com/oauth/authorize` | `auth.openai.com/oauth/token` | `app_EMoamEEZ73f0CkXaXp7hrann` |
-| GitHub Copilot | `github.com/login/device` (Device Code) | `github.com/login/oauth/access_token` | `Iv1.b507a08c87ecfe98` |
+| Provider       | 授权端点                                | Token 端点                             | Client ID                              |
+| -------------- | --------------------------------------- | -------------------------------------- | -------------------------------------- |
+| Claude         | `claude.ai/oauth/authorize`             | `console.anthropic.com/v1/oauth/token` | `9d1c250a-e61b-44d9-88ed-5944d1962f5e` |
+| OpenAI Codex   | `auth.openai.com/oauth/authorize`       | `auth.openai.com/oauth/token`          | `app_EMoamEEZ73f0CkXaXp7hrann`         |
+| GitHub Copilot | `github.com/login/device` (Device Code) | `github.com/login/oauth/access_token`  | `Iv1.b507a08c87ecfe98`                 |
 
 ### 各 Provider API 端点及认证方式
 
-| Provider | API 端点 | 认证 Header | 额外 Header |
-|----------|---------|------------|------------|
-| Claude | `api.anthropic.com/v1/messages` | `x-api-key: <token>` | `anthropic-beta: oauth-2025-04-20` |
-| OpenAI Codex | `chatgpt.com/backend-api/codex/responses` | `Authorization: Bearer <token>` | — |
-| GitHub Copilot | `api.githubcopilot.com` (逆向) | `Authorization: Bearer <session_token>` | 需两阶段 token 交换 |
+| Provider       | API 端点                                  | 认证 Header                             | 额外 Header                        |
+| -------------- | ----------------------------------------- | --------------------------------------- | ---------------------------------- |
+| Claude         | `api.anthropic.com/v1/messages`           | `x-api-key: <token>`                    | `anthropic-beta: oauth-2025-04-20` |
+| OpenAI Codex   | `chatgpt.com/backend-api/codex/responses` | `Authorization: Bearer <token>`         | —                                  |
+| GitHub Copilot | `api.githubcopilot.com` (逆向)            | `Authorization: Bearer <session_token>` | 需两阶段 token 交换                |
 
 ### 参考实现
 
-| 项目 | 语言 | 描述 |
-|------|------|------|
-| [anthropic-auth](https://github.com/querymt/anthropic-auth) | Rust | Claude OAuth，支持自动/手动模式 |
-| [opencode-anthropic-auth](https://github.com/ex-machina-co/opencode-anthropic-auth) | TS | OpenCode 插件，Claude OAuth |
-| [openai-oauth](https://github.com/EvanZhouDev/openai-oauth) | TS | OpenAI OAuth + localhost 代理 |
-| [opencode-openai-codex-auth](https://github.com/numman-ali/opencode-openai-codex-auth) | TS | OpenCode 插件，Codex OAuth |
+| 项目                                                                                   | 语言 | 描述                            |
+| -------------------------------------------------------------------------------------- | ---- | ------------------------------- |
+| [anthropic-auth](https://github.com/querymt/anthropic-auth)                            | Rust | Claude OAuth，支持自动/手动模式 |
+| [opencode-anthropic-auth](https://github.com/ex-machina-co/opencode-anthropic-auth)    | TS   | OpenCode 插件，Claude OAuth     |
+| [openai-oauth](https://github.com/EvanZhouDev/openai-oauth)                            | TS   | OpenAI OAuth + localhost 代理   |
+| [opencode-openai-codex-auth](https://github.com/numman-ali/opencode-openai-codex-auth) | TS   | OpenCode 插件，Codex OAuth      |

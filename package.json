@@ -2,15 +2,36 @@
   "name": "open-sub-auth",
   "version": "0.1.0",
   "description": "Open Source Subscription OAuth Authentication Library for AI Providers. Login once with your subscription. Call native APIs directly.",
+  "keywords": [
+    "ai",
+    "authentication",
+    "claude",
+    "codex",
+    "oauth",
+    "openai",
+    "pkce",
+    "subscription",
+    "token"
+  ],
+  "license": "MIT",
+  "author": "",
+  "bin": {
+    "open-sub-auth": "./dist/cli/index.mjs"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -18,48 +39,27 @@
       }
     }
   },
-  "bin": {
-    "open-sub-auth": "./dist/cli/index.js"
-  },
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md"
-  ],
   "scripts": {
-    "build": "tsup",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
+    "build": "vp pack",
+    "test": "vp test",
+    "test:watch": "vp test --watch",
+    "lint": "vp lint",
+    "format": "vp fmt",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm run build"
-  },
-  "keywords": [
-    "oauth",
-    "authentication",
-    "ai",
-    "claude",
-    "openai",
-    "codex",
-    "subscription",
-    "token",
-    "pkce"
-  ],
-  "author": "",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
   },
   "dependencies": {
     "cross-keychain": "^1.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.0",
     "@types/node": "^22.0.0",
-    "tsup": "^8.0.0",
     "typescript": "^5.6.0",
-    "vitest": "^2.0.0"
-  }
+    "vite-plus": "^0.1.16"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@10.33.0"
 }

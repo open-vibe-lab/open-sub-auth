@@ -19,11 +19,11 @@ A lightweight, open-source TypeScript library that handles OAuth login for AI su
 
 ## Supported Providers
 
-| Provider | Auth Method | Status |
-|----------|-------------|--------|
-| Claude Pro/Max | OAuth PKCE | MVP |
-| OpenAI ChatGPT Plus/Pro (Codex) | OAuth PKCE | MVP |
-| GitHub Copilot | Device Code | Planned |
+| Provider                        | Auth Method | Status  |
+| ------------------------------- | ----------- | ------- |
+| Claude Pro/Max                  | OAuth PKCE  | MVP     |
+| OpenAI ChatGPT Plus/Pro (Codex) | OAuth PKCE  | MVP     |
+| GitHub Copilot                  | Device Code | Planned |
 
 ## Installation
 
@@ -55,26 +55,26 @@ npx open-sub-auth login claude --manual
 ### Library
 
 ```typescript
-import { TokenManager, createTokenStore } from 'open-sub-auth';
+import { TokenManager, createTokenStore } from "open-sub-auth";
 
 // Initialize
 const store = await createTokenStore();
 const manager = new TokenManager(store);
 
 // Login (opens browser)
-await manager.login('claude');
+await manager.login("claude");
 
 // Get authenticated headers for API calls
-const headers = await manager.getAuthHeaders('claude');
+const headers = await manager.getAuthHeaders("claude");
 
 // Call the API directly with fetch
-const response = await fetch('https://api.anthropic.com/v1/messages', {
-  method: 'POST',
-  headers, // Includes x-api-key + anthropic-beta header automatically
+const response = await fetch("https://api.anthropic.com/v1/messages", {
+  method: "POST",
+  headers, // Includes Authorization: Bearer + anthropic-beta header automatically
   body: JSON.stringify({
-    model: 'claude-sonnet-4-20250514',
+    model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
-    messages: [{ role: 'user', content: 'Hello!' }],
+    messages: [{ role: "user", content: "Hello!" }],
   }),
 });
 ```
@@ -82,15 +82,15 @@ const response = await fetch('https://api.anthropic.com/v1/messages', {
 ### OpenAI Codex
 
 ```typescript
-await manager.login('openai-codex');
-const headers = await manager.getAuthHeaders('openai-codex');
+await manager.login("openai-codex");
+const headers = await manager.getAuthHeaders("openai-codex");
 
-const response = await fetch('https://chatgpt.com/backend-api/codex/responses', {
-  method: 'POST',
+const response = await fetch("https://chatgpt.com/backend-api/codex/responses", {
+  method: "POST",
   headers, // Includes Authorization: Bearer automatically
   body: JSON.stringify({
-    model: 'gpt-5-codex-mini',
-    input: [{ role: 'user', type: 'message', content: 'Hello!' }],
+    model: "gpt-5-codex-mini",
+    input: [{ role: "user", type: "message", content: "Hello!" }],
     stream: false,
   }),
 });
@@ -101,11 +101,11 @@ const response = await fetch('https://chatgpt.com/backend-api/codex/responses', 
 If you've already authenticated with OpenAI's Codex CLI, you can import those tokens:
 
 ```typescript
-import { importFromCodexCli } from 'open-sub-auth';
+import { importFromCodexCli } from "open-sub-auth";
 
 const tokens = importFromCodexCli(); // Reads ~/.codex/auth.json
 if (tokens) {
-  console.log('Found existing tokens!');
+  console.log("Found existing tokens!");
 }
 ```
 
@@ -146,9 +146,9 @@ const store = await createTokenStore(preferKeychain?: boolean): Promise<TokenSto
 
 ```typescript
 interface LoginOptions {
-  port?: number;      // Override callback server port
-  timeout?: number;   // Login timeout in ms (default: 120000)
-  manual?: boolean;   // Use manual code paste mode
+  port?: number; // Override callback server port
+  timeout?: number; // Login timeout in ms (default: 120000)
+  manual?: boolean; // Use manual code paste mode
 }
 ```
 
@@ -187,10 +187,10 @@ Using subscription OAuth tokens in third-party tools may violate provider Terms 
 
 The API endpoints used by subscription tokens are not the same as the standard public APIs:
 
-| Provider | Endpoint | Notes |
-|----------|----------|-------|
-| Claude | `api.anthropic.com/v1/messages` | Requires `x-api-key` header + `anthropic-beta: oauth-2025-04-20` |
-| OpenAI Codex | `chatgpt.com/backend-api/codex/responses` | Private endpoint, non-standard request format |
+| Provider     | Endpoint                                  | Notes                                                            |
+| ------------ | ----------------------------------------- | ---------------------------------------------------------------- |
+| Claude       | `api.anthropic.com/v1/messages`           | Requires `Authorization: Bearer` header + `anthropic-beta: oauth-2025-04-20` |
+| OpenAI Codex | `chatgpt.com/backend-api/codex/responses` | Private endpoint, non-standard request format                    |
 
 These endpoints may change without notice.
 
