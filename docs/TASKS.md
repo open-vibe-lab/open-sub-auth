@@ -197,10 +197,17 @@
 
 - **优先级**: 中
 - **描述**: 支持更多 AI 提供商
-- **候选**:
-  - Gemini（Google OAuth）
-  - Cursor（如果有 OAuth 接口）
-  - 其他支持订阅 OAuth 的 AI 服务
+- **调研结论（2026-04）**:
+  - ❌ **Gemini（Google OAuth）**: Google 官方明确声明，使用 Gemini CLI OAuth 进行第三方工具认证违反 ToS，不可实现
+  - ❌ **Cursor**: 无标准 OAuth 流，认证 token 存储在 SQLite 数据库（`~/Library/Application Support/Cursor/User/globalStorage/state.vscdb`）。如需实现 `importFromCursorApp()`：
+    - `node:sqlite` 内置模块仅 Node ≥ 22.5 可用（当前最低要求 18.17.0）
+    - 添加 `better-sqlite3` 等外部依赖会破坏零依赖设计
+    - 本机无 Cursor 安装，文件格式未经实机验证
+    - SQLite key: `cursorAuth/accessToken` / `cursorAuth/refreshToken`（社区逆向）
+  - ❌ **Windsurf/Codeium**: 使用 Firebase ID token 认证 + `POST api.codeium.com/register_user/`，非标准 OAuth，不符合本库设计模式
+- **候选解决方案**:
+  - 等待 engines.node 升级至 ≥ 22.5.0 后，用 `node:sqlite` 实现 Cursor token 导入
+  - 调研其他符合标准 OAuth 模式且有付费订阅的 AI 服务（Perplexity、JetBrains AI 等）
 - **工作内容**: 每个 provider 需实现 Provider 接口 + 对应测试
 
 #### Task R10: 完善文档和社区 ✅ (部分完成)
