@@ -1,6 +1,6 @@
 {
   "name": "@open-vibe-lab/open-sub-auth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Open Source Subscription OAuth Authentication Library for AI Providers. Login once with your subscription. Call native APIs directly.",
   "keywords": [
     "ai",
