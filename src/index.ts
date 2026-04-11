@@ -39,6 +39,7 @@ export { getProvider, listProviders, registerProvider } from "@/providers/regist
 // Built-in providers
 export { ClaudeProvider } from "@/providers/claude.ts";
 export { OpenAICodexProvider, importFromCodexCli } from "@/providers/openai-codex.ts";
+export { GitHubCopilotProvider } from "@/providers/github-copilot.ts";
 
 // Core utilities (for advanced users / custom providers)
 export {
@@ -53,6 +54,7 @@ export {
   executePKCEFlow,
   refreshAccessToken,
 } from "@/core/oauth-pkce.ts";
+export { executeDeviceCodeFlow, pollForToken, requestDeviceCode } from "@/core/oauth-device.ts";
 export { startCallbackServer } from "@/core/callback-server.ts";
 export { parseCodeAndState, promptForCode } from "@/core/manual-code-input.ts";
 export { openBrowser } from "@/core/browser.ts";

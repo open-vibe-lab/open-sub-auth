@@ -98,7 +98,7 @@
 
 ### v0.2.0 — 扩展 Provider + 增强功能
 
-#### Task R1: GitHub Copilot Provider (Device Code Flow)
+#### Task R1: GitHub Copilot Provider (Device Code Flow) ✅
 
 - **优先级**: 高
 - **描述**: 实现 GitHub Copilot 认证支持
@@ -109,9 +109,9 @@
   - `src/providers/github-copilot.ts` — GitHub Copilot provider
     - Device Code Flow（非 PKCE）
     - 两阶段 token 交换：GitHub OAuth token → Copilot session token（GET https://api.github.com/copilot_internal/v2/token）
-    - Session token 内存缓存 + 过期刷新
-    - Account ID 通过 GitHub User API 获取
-  - 对应单元测试
+    - Session token 通过 TokenManager 刷新机制自动维护（refreshToken = GitHub OAuth token）
+    - Account ID 通过 GitHub User API 获取（/api/user）
+  - 28 个单元测试通过（oauth-device: 13 + github-copilot: 15）
 - **风险**: 无公开 API 端点，完全依赖逆向工程，稳定性未知
 
 #### Task R2: 代理 (Proxy) 支持
