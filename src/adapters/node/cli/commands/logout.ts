@@ -1,11 +1,14 @@
-import { listProviders } from "@/providers/registry.ts";
-import { createTokenStore } from "@/storage/store.ts";
-import type { StoreType } from "@/storage/store.ts";
-import { TokenManager } from "@/token/manager.ts";
-import { printError, printSuccess, promptSelect } from "@/cli/ui.ts";
+import { listProviders } from "@/core/providers/registry.ts";
+import { createTokenStore } from "@/adapters/node/storage/index.ts";
+import type { StoreType } from "@/adapters/node/storage/index.ts";
+import { TokenManager } from "@/core/token-manager.ts";
+import { printError, printSuccess, promptSelect } from "@/adapters/node/cli/ui.ts";
 
 export async function logoutCommand(providerArg?: string, storeType?: StoreType): Promise<void> {
-  await Promise.all([import("@/providers/claude.ts"), import("@/providers/openai-codex.ts")]);
+  await Promise.all([
+    import("@/core/providers/claude.ts"),
+    import("@/core/providers/openai-codex.ts"),
+  ]);
 
   const providers = listProviders();
   let providerName = providerArg;

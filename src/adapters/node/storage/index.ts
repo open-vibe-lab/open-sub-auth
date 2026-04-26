@@ -1,7 +1,7 @@
 import { AuthenticationError } from "@/errors.ts";
 import type { TokenStore } from "@/types.ts";
-import { FileStore } from "@/storage/file-store.ts";
-import { KeychainStore } from "@/storage/keychain-store.ts";
+import { FileStore } from "@/adapters/node/storage/file-store.ts";
+import { KeychainStore } from "@/adapters/node/storage/keychain-store.ts";
 
 export type StoreType = "auto" | "keychain" | "file";
 

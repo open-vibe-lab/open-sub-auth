@@ -37,7 +37,28 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/core/index.d.mts",
+        "default": "./dist/core/index.mjs"
+      },
+      "require": {
+        "types": "./dist/core/index.d.cts",
+        "default": "./dist/core/index.cjs"
+      }
+    },
+    "./node": {
+      "import": {
+        "types": "./dist/adapters/node/index.d.mts",
+        "default": "./dist/adapters/node/index.mjs"
+      },
+      "require": {
+        "types": "./dist/adapters/node/index.d.cts",
+        "default": "./dist/adapters/node/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "vp pack",

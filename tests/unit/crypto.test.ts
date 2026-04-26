@@ -5,6 +5,7 @@ import {
   generateCodeVerifier,
   generatePKCE,
   generateState,
+  sha256Hex,
 } from "@/core/crypto.ts";
 
 describe("generateCodeVerifier", () => {
@@ -22,22 +23,22 @@ describe("generateCodeVerifier", () => {
 });
 
 describe("generateCodeChallenge", () => {
-  it("produces correct S256 challenge from verifier", () => {
+  it("produces correct S256 challenge from verifier (matches node:crypto)", async () => {
     const verifier = "test-verifier-value";
     const expected = createHash("sha256").update(verifier).digest("base64url");
-    expect(generateCodeChallenge(verifier)).toBe(expected);
+    expect(await generateCodeChallenge(verifier)).toBe(expected);
   });
 
-  it("produces different challenges for different verifiers", () => {
-    const c1 = generateCodeChallenge("verifier-1");
-    const c2 = generateCodeChallenge("verifier-2");
+  it("produces different challenges for different verifiers", async () => {
+    const c1 = await generateCodeChallenge("verifier-1");
+    const c2 = await generateCodeChallenge("verifier-2");
     expect(c1).not.toBe(c2);
   });
 });
 
 describe("generatePKCE", () => {
-  it("returns matching verifier and challenge pair", () => {
-    const { codeVerifier, codeChallenge } = generatePKCE();
+  it("returns matching verifier and challenge pair", async () => {
+    const { codeVerifier, codeChallenge } = await generatePKCE();
     const expectedChallenge = createHash("sha256").update(codeVerifier).digest("base64url");
     expect(codeChallenge).toBe(expectedChallenge);
   });
@@ -54,5 +55,13 @@ describe("generateState", () => {
   it("generates unique values", () => {
     const states = new Set(Array.from({ length: 100 }, () => generateState()));
     expect(states.size).toBe(100);
+  });
+});
+
+describe("sha256Hex", () => {
+  it("matches node:crypto SHA-256 hex output", async () => {
+    const input = "the quick brown fox";
+    const expected = createHash("sha256").update(input).digest("hex");
+    expect(await sha256Hex(input)).toBe(expected);
   });
 });

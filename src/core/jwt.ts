@@ -25,9 +25,16 @@ export function decodeJWT(token: string): JWTClaims {
     throw new Error("Invalid JWT: empty payload");
   }
 
-  // Add padding if needed for base64url decoding
-  const padded = payload.replace(/-/g, "+").replace(/_/g, "/");
-  const decoded = Buffer.from(padded, "base64").toString("utf8");
+  // base64url → base64, then pad to a multiple of 4
+  let b64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = b64.length % 4;
+  if (pad) b64 += "=".repeat(4 - pad);
+
+  // atob produces a binary string; decode as UTF-8 via TextDecoder for non-ASCII safety
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const decoded = new TextDecoder().decode(bytes);
 
   return JSON.parse(decoded) as JWTClaims;
 }

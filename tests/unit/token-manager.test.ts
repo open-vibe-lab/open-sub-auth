@@ -3,10 +3,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
 import { NoCredentialError } from "@/errors.ts";
-import { registerProvider } from "@/providers/registry.ts";
-import { FileStore } from "@/storage/file-store.ts";
-import { TokenManager } from "@/token/manager.ts";
-import { decodeJWT } from "@/token/jwt.ts";
+import { registerProvider } from "@/core/providers/registry.ts";
+import { FileStore } from "@/adapters/node/storage/file-store.ts";
+import { TokenManager } from "@/core/token-manager.ts";
+import { decodeJWT } from "@/core/jwt.ts";
 import type {
   AuthHeaders,
   LoginOptions,
@@ -53,7 +53,7 @@ class MockProvider implements Provider {
     return { authorization: `Bearer ${accessToken}` };
   }
 
-  getAccountId(_tokenSet: TokenSet): string {
+  async getAccountId(_tokenSet: TokenSet): Promise<string> {
     return "mock-account-id";
   }
 

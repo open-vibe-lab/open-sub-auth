@@ -1,9 +1,7 @@
+import type { AuthFlowAdapters } from "@/core/abstractions/index.ts";
+import { generatePKCE, generateState } from "@/core/crypto.ts";
 import { OAuthCallbackError } from "@/errors.ts";
 import type { AuthorizationResult, LoginOptions, ProviderConfig, TokenSet } from "@/types.ts";
-import { openBrowser } from "@/core/browser.ts";
-import { startCallbackServer } from "@/core/callback-server.ts";
-import { generatePKCE, generateState } from "@/core/crypto.ts";
-import { promptForCode } from "@/core/manual-code-input.ts";
 
 /** Build the full OAuth authorization URL with PKCE and state params */
 export function buildAuthorizationUrl(
@@ -97,6 +95,8 @@ export async function refreshAccessToken(
 
 export interface PKCEFlowOptions {
   config: ProviderConfig;
+  /** Platform adapters for browser launching + callback/code handling */
+  adapters: AuthFlowAdapters;
   loginOptions?: LoginOptions;
   /**
    * Manual mode redirect URI (used when manual=true).
@@ -107,8 +107,8 @@ export interface PKCEFlowOptions {
 
 /** Execute the full PKCE flow: generate params, open browser, wait for callback, exchange code */
 export async function executePKCEFlow(options: PKCEFlowOptions): Promise<TokenSet> {
-  const { config, loginOptions } = options;
-  const { codeVerifier, codeChallenge } = generatePKCE();
+  const { config, adapters, loginOptions } = options;
+  const { codeVerifier, codeChallenge } = await generatePKCE();
   // Some providers (e.g. Claude) require state === verifier for their token exchange
   const state = config.stateIsVerifier ? codeVerifier : generateState();
   const manual = loginOptions?.manual ?? false;
@@ -117,6 +117,9 @@ export async function executePKCEFlow(options: PKCEFlowOptions): Promise<TokenSe
   let redirectUri: string;
 
   if (manual && options.manualRedirectUri) {
+    if (!adapters.codePrompt) {
+      throw new OAuthCallbackError("Manual mode requires a CodePrompter adapter");
+    }
     // Manual mode: redirect to provider's callback page, user copies code
     redirectUri = options.manualRedirectUri;
     const authUrl = buildAuthorizationUrl(config, codeChallenge, state, redirectUri);
@@ -124,41 +127,34 @@ export async function executePKCEFlow(options: PKCEFlowOptions): Promise<TokenSe
     if (loginOptions?.onOpenBrowser) {
       loginOptions.onOpenBrowser(authUrl);
     } else {
-      openBrowser(authUrl);
+      await adapters.browser.open(authUrl);
     }
 
-    process.stderr.write(
-      `\nOpen this URL in your browser if it didn't open automatically:\n${authUrl}\n\n`,
-    );
-    authResult = await promptForCode(state);
+    authResult = await adapters.codePrompt.promptForCode(state);
   } else {
-    // Automatic mode: local callback server
-    const port = loginOptions?.port ?? 0;
+    if (!adapters.callback) {
+      throw new OAuthCallbackError("Automatic mode requires a CallbackReceiver adapter");
+    }
+    // Automatic mode: platform-specific callback receiver (local server, tab listener, etc.)
     const timeout = loginOptions?.timeout ?? 120_000;
-
-    const server = await startCallbackServer({
-      port,
+    const handle = await adapters.callback.listen({
       expectedState: state,
       timeout,
+      port: loginOptions?.port,
     });
-
-    redirectUri = `http://127.0.0.1:${server.port}/callback`;
+    redirectUri = handle.redirectUri;
     const authUrl = buildAuthorizationUrl(config, codeChallenge, state, redirectUri);
 
     if (loginOptions?.onOpenBrowser) {
       loginOptions.onOpenBrowser(authUrl);
     } else {
-      openBrowser(authUrl);
+      await adapters.browser.open(authUrl);
     }
 
-    process.stderr.write(
-      `\nOpen this URL in your browser if it didn't open automatically:\n${authUrl}\n\nWaiting for authorization...\n`,
-    );
-
     try {
-      authResult = await server.result;
+      authResult = await handle.result;
     } catch (err) {
-      server.close();
+      handle.close();
       throw err;
     }
   }

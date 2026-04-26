@@ -1,7 +1,7 @@
-import { createHash } from "node:crypto";
+import type { AuthFlowAdapters } from "@/core/abstractions/index.ts";
+import { sha256Hex } from "@/core/crypto.ts";
+import { executeDeviceCodeFlow } from "@/core/device-flow.ts";
 import { OAuthCallbackError } from "@/errors.ts";
-import { executeDeviceCodeFlow } from "@/core/oauth-device.ts";
-import { registerProvider } from "@/providers/registry.ts";
 import type { AuthHeaders, LoginOptions, Provider, ProviderConfig, TokenSet } from "@/types.ts";
 
 const GITHUB_COPILOT_CONFIG: ProviderConfig = {
@@ -64,11 +64,13 @@ async function fetchGitHubUser(
 
 export class GitHubCopilotProvider implements Provider {
   readonly config = GITHUB_COPILOT_CONFIG;
+  constructor(private readonly adapters: AuthFlowAdapters) {}
 
   async login(options?: LoginOptions): Promise<TokenSet> {
     // Step 1: Device Code Flow → GitHub OAuth access token
     const githubTokenSet = await executeDeviceCodeFlow({
       config: this.config,
+      adapters: this.adapters,
       loginOptions: options,
     });
 
@@ -118,7 +120,7 @@ export class GitHubCopilotProvider implements Provider {
     };
   }
 
-  getAccountId(tokenSet: TokenSet): string {
+  async getAccountId(tokenSet: TokenSet): Promise<string> {
     // Prefer GitHub login name (set during login in raw)
     if (
       tokenSet.raw?.login &&
@@ -129,7 +131,7 @@ export class GitHubCopilotProvider implements Provider {
     }
     // Fall back to hash of the GitHub OAuth token (refreshToken)
     const source = tokenSet.refreshToken ?? tokenSet.accessToken;
-    return createHash("sha256").update(source).digest("hex").slice(0, 16);
+    return (await sha256Hex(source)).slice(0, 16);
   }
 
   getAccountLabel(tokenSet: TokenSet): string | undefined {
@@ -146,22 +148,3 @@ export class GitHubCopilotProvider implements Provider {
     return undefined;
   }
 }
-
-/**
- * Import a GitHub OAuth token from the COPILOT_GITHUB_TOKEN environment variable.
- * The GitHub OAuth token becomes the refresh token; the expired access token forces an
- * immediate Copilot session token fetch on the first call to getToken().
- */
-export function importCopilotTokenFromEnv(): TokenSet | null {
-  const token = process.env.COPILOT_GITHUB_TOKEN;
-  if (!token) return null;
-  return {
-    accessToken: "", // Expired — getToken() will call refresh() to obtain a session token
-    refreshToken: token, // GitHub OAuth token used to obtain Copilot session tokens
-    expiresAt: 0,
-    tokenType: "bearer",
-  };
-}
-
-// Auto-register
-registerProvider("github-copilot", () => new GitHubCopilotProvider());

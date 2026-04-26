@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { OAuthCallbackError, OAuthTimeoutError } from "@/errors.ts";
-import { pollForToken, requestDeviceCode } from "@/core/oauth-device.ts";
+import { pollForToken, requestDeviceCode } from "@/core/device-flow.ts";
 import type { ProviderConfig } from "@/types.ts";
 
 const TEST_CONFIG: ProviderConfig = {

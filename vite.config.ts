@@ -26,11 +26,12 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     coverage: {
       include: ["src/**/*.ts"],
-      exclude: ["src/cli/**"],
+      exclude: ["src/adapters/node/cli/**"],
     },
   },
   pack: [
     {
+      // Default entry — Node-bound, backward-compatible
       entry: ["src/index.ts"],
       format: ["esm", "cjs"],
       dts: true,
@@ -39,7 +40,24 @@ export default defineConfig({
       outDir: "dist",
     },
     {
-      entry: ["src/cli/index.ts"],
+      // Pure core entry — runtime-agnostic, no Node deps, no auto-registration
+      entry: ["src/core/index.ts"],
+      format: ["esm", "cjs"],
+      dts: true,
+      sourcemap: true,
+      outDir: "dist/core",
+    },
+    {
+      // Explicit Node adapter entry
+      entry: ["src/adapters/node/index.ts"],
+      format: ["esm", "cjs"],
+      dts: true,
+      sourcemap: true,
+      outDir: "dist/adapters/node",
+    },
+    {
+      // CLI binary
+      entry: ["src/adapters/node/cli/index.ts"],
       format: ["esm"],
       banner: { js: "#!/usr/bin/env node" },
       outDir: "dist/cli",

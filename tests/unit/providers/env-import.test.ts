@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vite-plus/test";
-import { importClaudeTokenFromEnv } from "@/providers/claude.ts";
-import { importCopilotTokenFromEnv } from "@/providers/github-copilot.ts";
+import { importClaudeTokenFromEnv } from "@/adapters/node/env-import/claude.ts";
+import { importCopilotTokenFromEnv } from "@/adapters/node/env-import/copilot.ts";
 
 afterEach(() => {
   delete process.env.CLAUDE_CODE_OAUTH_TOKEN;

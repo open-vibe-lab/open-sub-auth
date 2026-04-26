@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vite-plus/test";
-import { ClaudeProvider } from "@/providers/claude.ts";
+import { ClaudeProvider } from "@/core/providers/claude.ts";
 import type { TokenSet } from "@/types.ts";
+import { stubAdapters } from "../_stub-adapters.ts";
 
 describe("ClaudeProvider", () => {
-  const provider = new ClaudeProvider();
+  const provider = new ClaudeProvider(stubAdapters);
 
   describe("config", () => {
     it("has correct provider name", () => {
@@ -43,30 +44,30 @@ describe("ClaudeProvider", () => {
   });
 
   describe("getAccountId", () => {
-    it("derives account ID from refresh token hash", () => {
+    it("derives account ID from refresh token hash", async () => {
       const tokenSet: TokenSet = {
         accessToken: "access-1",
         refreshToken: "refresh-1",
         expiresAt: Date.now() + 3600_000,
         tokenType: "api-key",
       };
-      const id = provider.getAccountId(tokenSet);
+      const id = await provider.getAccountId(tokenSet);
       expect(id).toHaveLength(16);
       expect(id).toMatch(/^[0-9a-f]+$/);
     });
 
-    it("falls back to access token when no refresh token", () => {
+    it("falls back to access token when no refresh token", async () => {
       const tokenSet: TokenSet = {
         accessToken: "access-1",
         refreshToken: null,
         expiresAt: Date.now() + 3600_000,
         tokenType: "api-key",
       };
-      const id = provider.getAccountId(tokenSet);
+      const id = await provider.getAccountId(tokenSet);
       expect(id).toHaveLength(16);
     });
 
-    it("returns same ID for same refresh token", () => {
+    it("returns same ID for same refresh token", async () => {
       const tokenSet1: TokenSet = {
         accessToken: "access-different-1",
         refreshToken: "same-refresh",
@@ -79,10 +80,10 @@ describe("ClaudeProvider", () => {
         expiresAt: Date.now(),
         tokenType: "api-key",
       };
-      expect(provider.getAccountId(tokenSet1)).toBe(provider.getAccountId(tokenSet2));
+      expect(await provider.getAccountId(tokenSet1)).toBe(await provider.getAccountId(tokenSet2));
     });
 
-    it("returns different IDs for different refresh tokens", () => {
+    it("returns different IDs for different refresh tokens", async () => {
       const ts1: TokenSet = {
         accessToken: "a",
         refreshToken: "refresh-a",
@@ -95,7 +96,7 @@ describe("ClaudeProvider", () => {
         expiresAt: 0,
         tokenType: "api-key",
       };
-      expect(provider.getAccountId(ts1)).not.toBe(provider.getAccountId(ts2));
+      expect(await provider.getAccountId(ts1)).not.toBe(await provider.getAccountId(ts2));
     });
   });
 

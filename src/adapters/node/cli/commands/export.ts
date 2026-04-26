@@ -1,5 +1,5 @@
-import { createTokenStore } from "@/storage/store.ts";
-import type { StoreType } from "@/storage/store.ts";
+import { createTokenStore } from "@/adapters/node/storage/index.ts";
+import type { StoreType } from "@/adapters/node/storage/index.ts";
 
 export async function exportCommand(storeType?: StoreType): Promise<void> {
   const store = await createTokenStore(storeType);

@@ -1,9 +1,11 @@
+import type { AuthFlowAdapters } from "@/core/abstractions/index.ts";
 import { OAuthCallbackError, OAuthTimeoutError } from "@/errors.ts";
-import { openBrowser } from "@/core/browser.ts";
 import type { DeviceCodeInfo, LoginOptions, ProviderConfig, TokenSet } from "@/types.ts";
 
 export interface DeviceCodeFlowOptions {
   config: ProviderConfig;
+  /** Platform adapters; only `browser` is used by the device code flow. */
+  adapters: AuthFlowAdapters;
   loginOptions?: LoginOptions;
 }
 
@@ -128,7 +130,7 @@ export async function pollForToken(
 
 /** Execute the full device code flow: request code, display to user, poll for token */
 export async function executeDeviceCodeFlow(options: DeviceCodeFlowOptions): Promise<TokenSet> {
-  const { config, loginOptions } = options;
+  const { config, adapters, loginOptions } = options;
 
   const deviceCode = await requestDeviceCode(config);
 
@@ -142,9 +144,9 @@ export async function executeDeviceCodeFlow(options: DeviceCodeFlowOptions): Pro
   if (loginOptions?.onDeviceCode) {
     loginOptions.onDeviceCode(displayInfo);
   } else {
-    // Open browser to the verification page and print instructions to stderr
-    openBrowser(deviceCode.verificationUriComplete ?? deviceCode.verificationUri);
-    process.stderr.write(
+    // Open browser to the verification page and log instructions
+    await adapters.browser.open(deviceCode.verificationUriComplete ?? deviceCode.verificationUri);
+    console.error(
       `\nVisit: ${deviceCode.verificationUri}\nEnter code: ${deviceCode.userCode}\n\nWaiting for authorization...\n`,
     );
   }

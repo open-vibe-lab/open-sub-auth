@@ -2,11 +2,13 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
-import { OpenAICodexProvider, importFromCodexCli } from "@/providers/openai-codex.ts";
+import { importFromCodexCli } from "@/adapters/node/env-import/codex.ts";
+import { OpenAICodexProvider } from "@/core/providers/openai-codex.ts";
 import type { TokenSet } from "@/types.ts";
+import { stubAdapters } from "../_stub-adapters.ts";
 
 describe("OpenAICodexProvider", () => {
-  const provider = new OpenAICodexProvider();
+  const provider = new OpenAICodexProvider(stubAdapters);
 
   describe("config", () => {
     it("has correct provider name", () => {
@@ -43,7 +45,7 @@ describe("OpenAICodexProvider", () => {
   });
 
   describe("getAccountId", () => {
-    it("extracts sub from JWT id_token", () => {
+    it("extracts sub from JWT id_token", async () => {
       const payload = Buffer.from(JSON.stringify({ sub: "user-abc123" })).toString("base64url");
       const idToken = `header.${payload}.signature`;
 
@@ -55,10 +57,10 @@ describe("OpenAICodexProvider", () => {
         tokenType: "bearer",
       };
 
-      expect(provider.getAccountId(tokenSet)).toBe("user-abc123");
+      expect(await provider.getAccountId(tokenSet)).toBe("user-abc123");
     });
 
-    it("falls back to access token hash when no id_token", () => {
+    it("falls back to access token hash when no id_token", async () => {
       const tokenSet: TokenSet = {
         accessToken: "access-token-value",
         refreshToken: null,
@@ -66,7 +68,7 @@ describe("OpenAICodexProvider", () => {
         tokenType: "bearer",
       };
 
-      const id = provider.getAccountId(tokenSet);
+      const id = await provider.getAccountId(tokenSet);
       expect(id).toHaveLength(16);
       expect(id).toMatch(/^[0-9a-f]+$/);
     });

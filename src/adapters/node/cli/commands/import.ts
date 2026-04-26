@@ -1,6 +1,6 @@
-import { createTokenStore } from "@/storage/store.ts";
-import type { StoreType } from "@/storage/store.ts";
-import { printError, printSuccess } from "@/cli/ui.ts";
+import { createTokenStore } from "@/adapters/node/storage/index.ts";
+import type { StoreType } from "@/adapters/node/storage/index.ts";
+import { printError, printSuccess } from "@/adapters/node/cli/ui.ts";
 import type { StoredCredential } from "@/types.ts";
 
 export async function importCommand(storeType?: StoreType): Promise<void> {

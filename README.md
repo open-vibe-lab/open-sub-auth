@@ -157,18 +157,42 @@ interface LoginOptions {
 ```
 open-sub-auth/
 ├── src/
-│   ├── core/           # OAuth flow engines (PKCE, callback server, crypto)
-│   ├── providers/      # Provider implementations (Claude, OpenAI Codex)
-│   ├── storage/        # Token storage (keychain, encrypted file)
-│   ├── token/          # Token manager, JWT utilities
-│   └── cli/            # CLI tool
+│   ├── core/                    # 100% runtime-agnostic
+│   │   ├── abstractions/        # BrowserLauncher / CallbackReceiver / CodePrompter
+│   │   ├── providers/           # Pure provider classes (config + protocol)
+│   │   ├── crypto.ts            # Web Crypto API (works in Node + browser + Worker)
+│   │   ├── jwt.ts
+│   │   ├── pkce-flow.ts         # OAuth PKCE flow, takes adapters as a param
+│   │   ├── device-flow.ts       # OAuth Device Code flow
+│   │   └── token-manager.ts
+│   └── adapters/
+│       ├── node/                # Node.js implementation
+│       │   ├── browser-launcher.ts    # spawns `open` / `xdg-open` / `cmd start`
+│       │   ├── callback-receiver.ts   # local HTTP server on 127.0.0.1
+│       │   ├── code-prompter.ts       # readline / stdin
+│       │   ├── storage/               # OS keychain + encrypted file
+│       │   ├── env-import/            # process.env / fs token importers
+│       │   └── cli/                   # CLI tool
+│       └── chrome-extension/    # (future — see docs/writing-an-adapter.md)
 ```
+
+### Three import surfaces
+
+| Entry | Use when | Pulls in Node deps? |
+|---|---|---|
+| `@open-vibe-lab/open-sub-auth`         | Node.js script / CLI consumer (default) | yes — auto-registers Node providers |
+| `@open-vibe-lab/open-sub-auth/node`    | Same as above, just explicit            | yes |
+| `@open-vibe-lab/open-sub-auth/core`    | Chrome extension / Worker / Deno / custom embedder | **no** — pure abstractions |
+
+The `/core` entry exports the same `TokenManager`, `Provider` classes, and OAuth primitives, but **does not** auto-register or pull in `node:fs` / `cross-keychain` / local-server code. Bring your own `AuthFlowAdapters` and call `registerProvider(...)` yourself.
 
 ### Design Decisions
 
 - **`getAuthHeaders()` instead of high-level Client API** — Each provider's API surface is completely different (Claude uses `x-api-key`, OpenAI Codex uses a private endpoint with non-standard format). A unified client would be a leaky abstraction. Instead, we provide authenticated headers and let you use `fetch` directly.
 
-- **OS keychain with encrypted file fallback** — Tokens are stored in the system keychain by default. On systems without keychain access, an AES-256-GCM encrypted file is used.
+- **Core / Adapter split** — All platform-specific I/O (HTTP server, browser launching, code prompts, file/keychain storage) is behind interfaces in `core/abstractions/`. The OAuth protocol logic in `core/` works on any runtime that has `fetch` + Web Crypto. See `docs/writing-an-adapter.md` for how to write a new adapter (e.g. for a Chrome extension).
+
+- **OS keychain with encrypted file fallback** — Tokens are stored in the system keychain by default. On systems without keychain access, an AES-256-GCM encrypted file is used. (Node adapter only; pure-core consumers provide their own `TokenStore`.)
 
 - **Concurrent refresh protection** — A per-account mutex prevents multiple simultaneous token refresh requests.
 

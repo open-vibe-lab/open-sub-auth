@@ -1,5 +1,5 @@
 import { NoCredentialError, TokenExpiredError, TokenRefreshError } from "@/errors.ts";
-import { getProvider } from "@/providers/registry.ts";
+import { getProvider } from "@/core/providers/registry.ts";
 import type {
   AuthHeaders,
   CredentialStatus,
@@ -26,7 +26,7 @@ export class TokenManager {
     const provider = getProvider(providerName);
     const tokenSet = await provider.login(options);
 
-    const accountId = provider.getAccountId(tokenSet);
+    const accountId = await provider.getAccountId(tokenSet);
     const accountLabel = provider.getAccountLabel?.(tokenSet);
     const now = Date.now();
 

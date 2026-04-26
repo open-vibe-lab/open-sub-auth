@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 import { AuthenticationError } from "@/errors.ts";
-import { FileStore } from "@/storage/file-store.ts";
-import { KeychainStore } from "@/storage/keychain-store.ts";
-import { createTokenStore } from "@/storage/store.ts";
+import { FileStore } from "@/adapters/node/storage/file-store.ts";
+import { KeychainStore } from "@/adapters/node/storage/keychain-store.ts";
+import { createTokenStore } from "@/adapters/node/storage/index.ts";
 
-vi.mock("@/storage/keychain-store.ts", () => {
+vi.mock("@/adapters/node/storage/keychain-store.ts", () => {
   return {
     KeychainStore: vi.fn(function MockKeychainStore(this: Record<string, unknown>) {
       this.get = vi.fn();

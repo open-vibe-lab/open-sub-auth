@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
-import { GitHubCopilotProvider } from "@/providers/github-copilot.ts";
+import { GitHubCopilotProvider } from "@/core/providers/github-copilot.ts";
 import type { TokenSet } from "@/types.ts";
+import { stubAdapters } from "../_stub-adapters.ts";
 
 describe("GitHubCopilotProvider", () => {
-  const provider = new GitHubCopilotProvider();
+  const provider = new GitHubCopilotProvider(stubAdapters);
 
   afterEach(() => {
     vi.restoreAllMocks();
@@ -48,7 +49,7 @@ describe("GitHubCopilotProvider", () => {
   });
 
   describe("getAccountId", () => {
-    it("uses GitHub login from raw field when available", () => {
+    it("uses GitHub login from raw field when available", async () => {
       const tokenSet: TokenSet = {
         accessToken: "session-token",
         refreshToken: "gho_github_token",
@@ -56,10 +57,10 @@ describe("GitHubCopilotProvider", () => {
         tokenType: "bearer",
         raw: { login: "octocat" },
       };
-      expect(provider.getAccountId(tokenSet)).toBe("octocat");
+      expect(await provider.getAccountId(tokenSet)).toBe("octocat");
     });
 
-    it("falls back to refresh token hash when login is unknown", () => {
+    it("falls back to refresh token hash when login is unknown", async () => {
       const tokenSet: TokenSet = {
         accessToken: "session-token",
         refreshToken: "gho_github_token",
@@ -67,35 +68,35 @@ describe("GitHubCopilotProvider", () => {
         tokenType: "bearer",
         raw: { login: "unknown" },
       };
-      const id = provider.getAccountId(tokenSet);
+      const id = await provider.getAccountId(tokenSet);
       expect(id).toHaveLength(16);
       expect(id).toMatch(/^[0-9a-f]+$/);
     });
 
-    it("falls back to refresh token hash when no raw field", () => {
+    it("falls back to refresh token hash when no raw field", async () => {
       const tokenSet: TokenSet = {
         accessToken: "session-token",
         refreshToken: "gho_github_token",
         expiresAt: 0,
         tokenType: "bearer",
       };
-      const id = provider.getAccountId(tokenSet);
+      const id = await provider.getAccountId(tokenSet);
       expect(id).toHaveLength(16);
       expect(id).toMatch(/^[0-9a-f]+$/);
     });
 
-    it("falls back to access token hash when no refresh token", () => {
+    it("falls back to access token hash when no refresh token", async () => {
       const tokenSet: TokenSet = {
         accessToken: "session-token",
         refreshToken: null,
         expiresAt: 0,
         tokenType: "bearer",
       };
-      const id = provider.getAccountId(tokenSet);
+      const id = await provider.getAccountId(tokenSet);
       expect(id).toHaveLength(16);
     });
 
-    it("returns same ID for same GitHub login", () => {
+    it("returns same ID for same GitHub login", async () => {
       const ts1: TokenSet = {
         accessToken: "session-a",
         refreshToken: "github-a",
@@ -110,7 +111,7 @@ describe("GitHubCopilotProvider", () => {
         tokenType: "bearer",
         raw: { login: "octocat" },
       };
-      expect(provider.getAccountId(ts1)).toBe(provider.getAccountId(ts2));
+      expect(await provider.getAccountId(ts1)).toBe(await provider.getAccountId(ts2));
     });
   });
 

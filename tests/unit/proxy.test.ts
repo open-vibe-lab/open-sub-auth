@@ -11,7 +11,7 @@ vi.mock("node:undici", () => {
 });
 
 import { EnvHttpProxyAgent, setGlobalDispatcher } from "node:undici";
-import { initProxy } from "@/core/proxy.ts";
+import { initProxy } from "@/adapters/node/proxy.ts";
 
 describe("initProxy", () => {
   const originalHttpsProxy = process.env.HTTPS_PROXY;

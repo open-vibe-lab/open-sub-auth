@@ -48,7 +48,7 @@ export interface Provider {
   /** Build auth headers for making API calls */
   getAuthHeaders(accessToken: string): AuthHeaders;
   /** Extract a stable account identifier from tokens */
-  getAccountId(tokenSet: TokenSet): string;
+  getAccountId(tokenSet: TokenSet): Promise<string>;
   /** Optional: human-readable account label (e.g., email) */
   getAccountLabel?(tokenSet: TokenSet): string | undefined;
 }

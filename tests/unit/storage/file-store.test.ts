@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
-import { FileStore } from "@/storage/file-store.ts";
+import { FileStore } from "@/adapters/node/storage/file-store.ts";
 import type { StoredCredential } from "@/types.ts";
 
 const makeCredential = (provider: string, accountId: string): StoredCredential => ({

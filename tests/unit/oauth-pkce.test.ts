@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
-import { startCallbackServer } from "@/core/callback-server.ts";
-import { parseCodeAndState } from "@/core/manual-code-input.ts";
-import { buildAuthorizationUrl, exchangeCode, refreshAccessToken } from "@/core/oauth-pkce.ts";
+import { startCallbackServer } from "@/adapters/node/callback-server.ts";
+import { parseCodeAndState } from "@/adapters/node/manual-code-input.ts";
+import { buildAuthorizationUrl, exchangeCode, refreshAccessToken } from "@/core/pkce-flow.ts";
 import type { ProviderConfig } from "@/types.ts";
 
 const TEST_CONFIG: ProviderConfig = {

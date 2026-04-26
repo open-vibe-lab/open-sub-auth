@@ -1,7 +1,7 @@
-import { createHash } from "node:crypto";
-import { executePKCEFlow, refreshAccessToken } from "@/core/oauth-pkce.ts";
+import type { AuthFlowAdapters } from "@/core/abstractions/index.ts";
+import { sha256Hex } from "@/core/crypto.ts";
+import { executePKCEFlow, refreshAccessToken } from "@/core/pkce-flow.ts";
 import type { AuthHeaders, LoginOptions, Provider, ProviderConfig, TokenSet } from "@/types.ts";
-import { registerProvider } from "@/providers/registry.ts";
 
 const CLAUDE_CONFIG: ProviderConfig = {
   name: "claude",
@@ -22,12 +22,14 @@ const MANUAL_REDIRECT_URI = "https://console.anthropic.com/oauth/code/callback";
 
 export class ClaudeProvider implements Provider {
   readonly config = CLAUDE_CONFIG;
+  constructor(private readonly adapters: AuthFlowAdapters) {}
 
   async login(options?: LoginOptions): Promise<TokenSet> {
     // Claude only allows console.anthropic.com/oauth/code/callback as redirect URI.
     // Local callback server is not supported, so always use manual (code-paste) mode.
     return executePKCEFlow({
       config: this.config,
+      adapters: this.adapters,
       loginOptions: { ...options, manual: true },
       manualRedirectUri: MANUAL_REDIRECT_URI,
     });
@@ -46,10 +48,10 @@ export class ClaudeProvider implements Provider {
     };
   }
 
-  getAccountId(tokenSet: TokenSet): string {
+  async getAccountId(tokenSet: TokenSet): Promise<string> {
     // Claude doesn't provide a profile endpoint, so derive ID from refresh token hash
     const source = tokenSet.refreshToken ?? tokenSet.accessToken;
-    return createHash("sha256").update(source).digest("hex").slice(0, 16);
+    return (await sha256Hex(source)).slice(0, 16);
   }
 
   getAccountLabel(_tokenSet: TokenSet): string | undefined {
@@ -57,21 +59,3 @@ export class ClaudeProvider implements Provider {
     return undefined;
   }
 }
-
-/**
- * Import a Claude OAuth token from the CLAUDE_CODE_OAUTH_TOKEN environment variable.
- * This token is used directly as the access token for API calls.
- */
-export function importClaudeTokenFromEnv(): TokenSet | null {
-  const token = process.env.CLAUDE_CODE_OAUTH_TOKEN;
-  if (!token) return null;
-  return {
-    accessToken: token,
-    refreshToken: null,
-    expiresAt: Date.now() + 3600_000, // Assume 1 hour; will refresh as needed
-    tokenType: "bearer",
-  };
-}
-
-// Auto-register
-registerProvider("claude", () => new ClaudeProvider());

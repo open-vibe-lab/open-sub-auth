@@ -30,7 +30,7 @@ const mockStore = {
   list: vi.fn(),
 };
 
-vi.mock("@/storage/store.ts", () => ({
+vi.mock("@/adapters/node/storage/index.ts", () => ({
   createTokenStore: vi.fn(async () => mockStore),
 }));
 
@@ -54,7 +54,7 @@ describe("exportCommand", () => {
       return true;
     });
 
-    const { exportCommand } = await import("@/cli/commands/export.ts");
+    const { exportCommand } = await import("@/adapters/node/cli/commands/export.ts");
     await exportCommand();
 
     process.stdout.write = origWrite;
@@ -75,7 +75,7 @@ describe("exportCommand", () => {
       return true;
     });
 
-    const { exportCommand } = await import("@/cli/commands/export.ts");
+    const { exportCommand } = await import("@/adapters/node/cli/commands/export.ts");
     await exportCommand();
 
     const output = written.join("");
@@ -107,7 +107,7 @@ describe("importCommand", () => {
     const stderrWrite = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
     const consoleLog = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    const { importCommand } = await import("@/cli/commands/import.ts");
+    const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
     await importCommand();
 
     expect(mockStore.set).toHaveBeenCalledOnce();
@@ -125,7 +125,7 @@ describe("importCommand", () => {
     vi.spyOn(process.stderr, "write").mockImplementation(() => true);
     vi.spyOn(console, "log").mockImplementation(() => {});
 
-    const { importCommand } = await import("@/cli/commands/import.ts");
+    const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
     await importCommand();
 
     expect(mockStore.set).toHaveBeenCalledTimes(2);
@@ -138,7 +138,7 @@ describe("importCommand", () => {
     });
     vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
-    const { importCommand } = await import("@/cli/commands/import.ts");
+    const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
     await expect(importCommand()).rejects.toThrow("process.exit called");
     expect(exitSpy).toHaveBeenCalledWith(1);
 
@@ -152,7 +152,7 @@ describe("importCommand", () => {
     });
     vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
-    const { importCommand } = await import("@/cli/commands/import.ts");
+    const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
     await expect(importCommand()).rejects.toThrow("process.exit called");
     expect(exitSpy).toHaveBeenCalledWith(1);
 
@@ -167,7 +167,7 @@ describe("importCommand", () => {
     });
     vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
-    const { importCommand } = await import("@/cli/commands/import.ts");
+    const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
     await expect(importCommand()).rejects.toThrow("process.exit called");
     expect(exitSpy).toHaveBeenCalledWith(1);
 
@@ -181,7 +181,7 @@ describe("importCommand", () => {
     });
     vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
-    const { importCommand } = await import("@/cli/commands/import.ts");
+    const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
     await expect(importCommand()).rejects.toThrow("process.exit called");
     expect(exitSpy).toHaveBeenCalledWith(1);
 

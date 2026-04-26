@@ -1,7 +1,7 @@
 import { parseArgs } from "node:util";
-import { printError } from "@/cli/ui.ts";
-import { initProxy } from "@/core/proxy.ts";
-import type { StoreType } from "@/storage/store.ts";
+import { printError } from "@/adapters/node/cli/ui.ts";
+import { initProxy } from "@/adapters/node/proxy.ts";
+import type { StoreType } from "@/adapters/node/storage/index.ts";
 
 const HELP = `
 open-sub-auth - OAuth authentication for AI subscription APIs
@@ -72,38 +72,41 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "login": {
-      const { loginCommand } = await import("@/cli/commands/login.ts");
+      const { loginCommand } = await import("@/adapters/node/cli/commands/login.ts");
       await loginCommand(providerArg, storeType);
       break;
     }
     case "logout": {
-      const { logoutCommand } = await import("@/cli/commands/logout.ts");
+      const { logoutCommand } = await import("@/adapters/node/cli/commands/logout.ts");
       await logoutCommand(providerArg, storeType);
       break;
     }
     case "status": {
-      const { statusCommand } = await import("@/cli/commands/status.ts");
+      const { statusCommand } = await import("@/adapters/node/cli/commands/status.ts");
       await statusCommand(storeType);
       break;
     }
     case "token": {
-      const { tokenCommand } = await import("@/cli/commands/token.ts");
+      const { tokenCommand } = await import("@/adapters/node/cli/commands/token.ts");
       await tokenCommand(providerArg, storeType);
       break;
     }
     case "export": {
-      const { exportCommand } = await import("@/cli/commands/export.ts");
+      const { exportCommand } = await import("@/adapters/node/cli/commands/export.ts");
       await exportCommand(storeType);
       break;
     }
     case "import": {
-      const { importCommand } = await import("@/cli/commands/import.ts");
+      const { importCommand } = await import("@/adapters/node/cli/commands/import.ts");
       await importCommand(storeType);
       break;
     }
     case "providers": {
-      await Promise.all([import("@/providers/claude.ts"), import("@/providers/openai-codex.ts")]);
-      const { listProviders } = await import("@/providers/registry.ts");
+      await Promise.all([
+        import("@/core/providers/claude.ts"),
+        import("@/core/providers/openai-codex.ts"),
+      ]);
+      const { listProviders } = await import("@/core/providers/registry.ts");
       const providers = listProviders();
       console.log("Available providers:");
       for (const p of providers) {
