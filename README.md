@@ -23,7 +23,13 @@ A lightweight, open-source TypeScript library that handles OAuth login for AI su
 | ------------------------------- | ----------- | ------- |
 | Claude Pro/Max                  | OAuth PKCE  | MVP     |
 | OpenAI ChatGPT Plus/Pro (Codex) | OAuth PKCE  | MVP     |
-| GitHub Copilot                  | Device Code | Planned |
+| GitHub Copilot                  | Device Code | MVP     |
+
+| Runtime          | Status                                                          |
+| ---------------- | --------------------------------------------------------------- |
+| Node.js (CLI)    | MVP                                                             |
+| Chrome extension | MVP — see [`examples/chrome-extension-demo`](./examples/chrome-extension-demo) |
+| Other browsers / Workers / Deno | bring your own adapter — see [`docs/writing-an-adapter.md`](./docs/writing-an-adapter.md) |
 
 ## Installation
 
@@ -180,9 +186,10 @@ open-sub-auth/
 
 | Entry | Use when | Pulls in Node deps? |
 |---|---|---|
-| `@open-vibe-lab/open-sub-auth`         | Node.js script / CLI consumer (default) | yes — auto-registers Node providers |
-| `@open-vibe-lab/open-sub-auth/node`    | Same as above, just explicit            | yes |
-| `@open-vibe-lab/open-sub-auth/core`    | Chrome extension / Worker / Deno / custom embedder | **no** — pure abstractions |
+| `@open-vibe-lab/open-sub-auth`                   | Node.js script / CLI consumer (default) | yes — auto-registers Node providers |
+| `@open-vibe-lab/open-sub-auth/node`              | Same as above, just explicit            | yes |
+| `@open-vibe-lab/open-sub-auth/chrome-extension`  | Chrome extension (MV3)                  | **no** — uses `chrome.tabs` / `chrome.storage.local` |
+| `@open-vibe-lab/open-sub-auth/core`              | Worker / Deno / custom embedder         | **no** — pure abstractions, bring your own adapters |
 
 The `/core` entry exports the same `TokenManager`, `Provider` classes, and OAuth primitives, but **does not** auto-register or pull in `node:fs` / `cross-keychain` / local-server code. Bring your own `AuthFlowAdapters` and call `registerProvider(...)` yourself.
 

@@ -56,6 +56,14 @@ export default defineConfig({
       outDir: "dist/adapters/node",
     },
     {
+      // Chrome extension adapter entry (zero Node deps)
+      entry: ["src/adapters/chrome-extension/index.ts"],
+      format: ["esm", "cjs"],
+      dts: true,
+      sourcemap: true,
+      outDir: "dist/adapters/chrome-extension",
+    },
+    {
       // CLI binary
       entry: ["src/adapters/node/cli/index.ts"],
       format: ["esm"],
