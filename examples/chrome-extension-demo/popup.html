@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>open-sub-auth Demo</title>
+    <style>
+      :root { font-family: system-ui, sans-serif; }
+      body { width: 320px; padding: 12px; margin: 0; background: #f7f7f8; color: #111; }
+      h1 { font-size: 14px; margin: 0 0 8px; font-weight: 600; }
+      .row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+      .row label { flex: 1; font-size: 13px; }
+      button { font-size: 12px; padding: 4px 8px; cursor: pointer; }
+      .small { font-size: 11px; color: #555; }
+      #log { font-family: ui-monospace, Menlo, monospace; font-size: 11px; background: #fff; border: 1px solid #ddd; padding: 6px; max-height: 120px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+      #code-paste { display: none; margin-top: 8px; padding: 6px; background: #fff8e0; border: 1px solid #e7c66a; border-radius: 4px; }
+      #code-input { width: 100%; box-sizing: border-box; font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+      .actions { display: flex; gap: 4px; margin-top: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>open-sub-auth demo</h1>
+
+    <div class="row">
+      <label>Claude</label>
+      <button data-action="login" data-provider="claude">Login</button>
+      <button data-action="logout" data-provider="claude">Logout</button>
+      <button data-action="test" data-provider="claude">Test</button>
+    </div>
+    <div class="row">
+      <label>OpenAI Codex</label>
+      <button data-action="login" data-provider="openai-codex">Login</button>
+      <button data-action="logout" data-provider="openai-codex">Logout</button>
+    </div>
+    <div class="row">
+      <label>GitHub Copilot</label>
+      <button data-action="login" data-provider="github-copilot">Login</button>
+      <button data-action="logout" data-provider="github-copilot">Logout</button>
+    </div>
+
+    <div id="code-paste">
+      <div class="small">Paste the code from the Anthropic console page:</div>
+      <input id="code-input" placeholder="code#state" />
+      <div class="actions">
+        <button id="code-submit">Submit</button>
+        <button id="code-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 8px"><button id="refresh-status">Refresh status</button></div>
+    <div id="log">ready.</div>
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

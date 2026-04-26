@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "open-sub-auth Demo",
+  "version": "0.1.0",
+  "description": "Demo: log in to Claude / OpenAI Codex / GitHub Copilot from a Chrome extension and call their APIs.",
+  "background": {
+    "service_worker": "dist/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "dist/popup.html",
+    "default_title": "open-sub-auth Demo"
+  },
+  "permissions": ["tabs", "storage"],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://console.anthropic.com/*",
+    "https://api.anthropic.com/*",
+    "https://auth.openai.com/*",
+    "http://localhost:1455/*",
+    "https://chatgpt.com/*",
+    "https://github.com/*",
+    "https://api.github.com/*"
+  ]
+}
